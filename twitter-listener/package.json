@@ -1,0 +1,17 @@
+{
+    "name": "twitter-listener",
+    "version": "1.0.0",
+    "description": "A Twitter listener microservice for streaming KubeCon tweets and sending them to Kafka.",
+    "main": "twitterListener.js",
+    "scripts": {
+      "start": "node twitterListener.js"
+    },
+    "dependencies": {
+      "dotenv": "^10.0.0",
+      "kafkajs": "^1.15.0",
+      "twit": "^2.2.11"
+    },
+    "author": "Your Name",
+    "license": "MIT"
+  }
+  
