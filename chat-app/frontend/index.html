@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Group</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .chat-container {
+            width: 400px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .chat-header {
+            font-size: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .messages {
+            height: 300px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            overflow-y: scroll;
+            margin-bottom: 10px;
+        }
+
+        .messages p {
+            margin: 5px 0;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        #join-chat {
+            background-color: #007bff;
+        }
+
+        #join-chat:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <div class="chat-header">
+        <h2>Chat Group</h2>
+    </div>
+
+    <div id="login-section">
+        <input type="text" id="group-id" placeholder="Enter Group ID" />
+        <input type="text" id="user-name" placeholder="Enter Username" />
+        <button id="join-chat">Join Chat</button>
+    </div>
+
+    <div id="chat-section" style="display: none;">
+        <div class="messages" id="chat-box"></div>
+        <input type="text" id="message-input" placeholder="Type a message..." />
+        <button id="send-message">Send</button>
+    </div>
+</div>
+
+<script>
+    let ws; // WebSocket connection
+    let userName;
+    let groupId;
+
+    // Join chat functionality
+    document.getElementById("join-chat").addEventListener("click", function() {
+        groupId = document.getElementById("group-id").value.trim();
+        userName = document.getElementById("user-name").value.trim();
+
+        if (!groupId || !userName) {
+            alert("Group ID and Username are required!");
+            return;
+        }
+
+        // Connect to WebSocket
+        ws = new WebSocket(`ws://localhost:8080/groups/${groupId}/ws?userID=${userName}`);
+
+        // Handle incoming messages
+        ws.onmessage = function(event) {
+            const messageData = event.data;
+            displayMessage(messageData);
+        };
+
+        // Handle connection open
+        ws.onopen = function() {
+            console.log("Connected to the chat group!");
+            toggleSections();
+        };
+
+        // Handle connection close
+        ws.onclose = function() {
+            console.log("Disconnected from the chat group.");
+        };
+
+        // Handle errors
+        ws.onerror = function(error) {
+            console.error("WebSocket error:", error);
+        };
+    });
+
+    // Send message functionality
+    document.getElementById("send-message").addEventListener("click", function() {
+        const messageInput = document.getElementById("message-input");
+        const messageText = messageInput.value.trim();
+
+        if (messageText) {
+            ws.send(`${userName}: ${messageText}`);
+            messageInput.value = ''; // Clear input field
+        }
+    });
+
+    // Display messages in the chat box
+    function displayMessage(message) {
+        const chatBox = document.getElementById("chat-box");
+        const messageElement = document.createElement("p");
+        messageElement.textContent = message;
+        chatBox.appendChild(messageElement);
+
+        // Scroll to the latest message
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    // Toggle between login and chat sections
+    function toggleSections() {
+        document.getElementById("login-section").style.display = "none";
+        document.getElementById("chat-section").style.display = "block";
+    }
+</script>
+
+</body>
+</html>
+
