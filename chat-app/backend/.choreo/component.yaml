@@ -1,0 +1,20 @@
+schemaVersion: 1.0
+
+endpoints:
+  - name: chat-app-backend
+    displayName: chat-app-backend
+    service:
+      basePath: /chat-app-backend-service
+      port: 9090
+    type: REST
+    networkVisibilities: 
+      - Public
+    schemaFilePath: openapi.yaml
+
+dependencies:
+  serviceReferences:
+    - name: choreo:///apifirst/mttm/mmvhxd/ad088/v1.0/PUBLIC
+      connectionConfig: 19d2648b-d29c-4452-afdd-1b9311e81412
+      env:
+        - from: ServiceURL
+          to: SERVICE_URL
