@@ -1,0 +1,68 @@
+openapi: 3.0.0
+info:
+  title: Simple HTTP API
+  description: A simple HTTP API that returns different status codes based on the route.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+
+paths:
+  /success:
+    get:
+      summary: Successful request
+      description: Returns a 200 OK response with a success message.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Request was successful
+        '404':
+          description: Resource not found
+
+  /error:
+    get:
+      summary: Internal server error
+      description: Returns a 500 Internal Server Error response with an error message.
+      responses:
+        '500':
+          description: Internal Server Error response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal Server Error
+        '404':
+          description: Resource not found
+
+  /{any}:
+    get:
+      summary: Resource not found
+      description: Returns a 404 Not Found response for any undefined route.
+      parameters:
+        - name: any
+          in: path
+          required: true
+          description: Any undefined route path
+          schema:
+            type: string
+      responses:
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Resource not found
